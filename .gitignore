@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Claude Code (keep commands, ignore settings)
+.claude/settings.json
+.claude/settings.local.json
+
+# Research runtime files
+research-progress.log
+completed-topics.txt
+failed-topics.txt
+next-round-topics.txt
+.research-lock
+.git-lock/
+.completed-lock/
+.failed-lock/
+.status-lock/
+.running-topics
+.topic-*.log
+logs/
+PAUSE
+STOP
+
+# Large files (add your PDFs here)
+# 99-raw-materials/*.pdf

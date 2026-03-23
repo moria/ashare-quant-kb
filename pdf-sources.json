@@ -1,0 +1,87 @@
+[
+  {
+    "file": "99-原始资料/量化投资以Python为工具.pdf",
+    "brand": "蔡立耕",
+    "description": "Python量化投资入门经典，涵盖数据获取、因子计算、策略回测全流程",
+    "language": "zh",
+    "pages": 0,
+    "chapter_map": {},
+    "keyword_hints": {
+      "因子": "factor",
+      "回测": "backtest",
+      "夏普比率": "Sharpe ratio",
+      "最大回撤": "maximum drawdown",
+      "年化收益率": "annualized return"
+    }
+  },
+  {
+    "file": "99-原始资料/打开量化投资的黑箱.pdf",
+    "brand": "Rishi K. Narang / 里什·纳兰",
+    "description": "量化交易系统全景解析——Alpha模型、风险模型、交易成本模型、执行模型",
+    "language": "zh",
+    "pages": 0,
+    "chapter_map": {},
+    "keyword_hints": {
+      "阿尔法模型": "alpha model",
+      "风险模型": "risk model",
+      "交易成本模型": "transaction cost model",
+      "组合构建": "portfolio construction"
+    }
+  },
+  {
+    "file": "99-原始资料/主动投资组合管理.pdf",
+    "brand": "Grinold & Kahn",
+    "description": "机构量化投资圣经，IR法则、因子模型、组合优化的理论基础",
+    "language": "zh",
+    "pages": 0,
+    "chapter_map": {},
+    "keyword_hints": {
+      "信息比率": "information ratio",
+      "基本定律": "fundamental law",
+      "阿尔法": "alpha",
+      "转移系数": "transfer coefficient"
+    }
+  },
+  {
+    "file": "99-原始资料/Advances_in_Financial_ML.pdf",
+    "brand": "Marcos López de Prado",
+    "description": "金融机器学习前沿——元标签、三重障碍法、分数阶差分、组合清洗交叉验证",
+    "language": "en",
+    "pages": 0,
+    "chapter_map": {},
+    "keyword_hints": {
+      "元标签": "meta-labeling",
+      "三重障碍": "triple barrier",
+      "分数阶差分": "fractional differentiation",
+      "组合清洗交叉验证": "combinatorial purged cross-validation"
+    }
+  },
+  {
+    "file": "99-原始资料/海龟交易法则.pdf",
+    "brand": "Curtis Faith / 柯蒂斯·费思",
+    "description": "经典趋势跟踪系统——ATR仓位管理、通道突破、资金管理法则",
+    "language": "zh",
+    "pages": 0,
+    "chapter_map": {},
+    "keyword_hints": {
+      "通道突破": "channel breakout",
+      "ATR": "average true range",
+      "头寸规模": "position sizing",
+      "资金管理": "money management"
+    }
+  },
+  {
+    "file": "99-原始资料/因子投资方法与实践.pdf",
+    "brand": "石川/刘洋溢/连祥斌",
+    "description": "A股因子投资实证研究——因子定义、检验方法、多因子模型构建的中国市场视角",
+    "language": "zh",
+    "pages": 0,
+    "chapter_map": {},
+    "keyword_hints": {
+      "因子溢价": "factor premium",
+      "截面回归": "cross-sectional regression",
+      "因子择时": "factor timing",
+      "Barra模型": "Barra model"
+    }
+  }
+]
