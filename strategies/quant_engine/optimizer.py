@@ -43,6 +43,17 @@ def optimize_portfolio(
     -------
     Series[stock_code → optimized_weight]
     """
+    # 基准为等权时（如BaoStock），行业约束无意义，直接用简化优化
+    bm_is_equal = benchmark_weights.std() < 1e-6 if len(benchmark_weights) > 0 else True
+
+    if bm_is_equal:
+        logger.info("基准为等权，使用Alpha排序优化（放宽行业约束）")
+        return _optimize_simple(
+            alpha_scores, benchmark_weights, industry=industry,
+            benchmark_industry=benchmark_industry, max_weight=max_weight,
+            max_industry_dev=max_industry_dev, hold_count=hold_count,
+        )
+
     try:
         return _optimize_cvxpy(
             alpha_scores, benchmark_weights, cov_matrix,
@@ -71,8 +82,10 @@ def _optimize_cvxpy(
     """cvxpy凸优化实现"""
     import cvxpy as cp
 
-    # 对齐股票池
-    universe = alpha_scores.dropna().index
+    # 先按alpha预选候选股（hold_count的2倍），再在子集内优化
+    all_valid = alpha_scores.dropna().sort_values(ascending=False)
+    candidate_count = min(len(all_valid), hold_count * 2)
+    universe = all_valid.head(candidate_count).index
     n = len(universe)
     if n == 0:
         return pd.Series(dtype=float)
@@ -101,13 +114,18 @@ def _optimize_cvxpy(
 
     # 行业约束
     if industry is not None and benchmark_industry is not None:
+        # 检测基准是否为等权（BaoStock无真实权重时自动放宽）
+        bm_w_std = benchmark_weights.std()
+        is_equal_weight = bm_w_std < 1e-6
+        effective_dev = max_industry_dev * 3 if is_equal_weight else max_industry_dev
+
         ind_aligned = industry.reindex(universe).fillna("未知")
         for ind_name in benchmark_industry.index:
             mask = (ind_aligned == ind_name).values.astype(float)
             bm_ind_w = benchmark_industry.get(ind_name, 0)
             if mask.sum() > 0:
-                constraints.append(mask @ w <= bm_ind_w + max_industry_dev)
-                constraints.append(mask @ w >= max(bm_ind_w - max_industry_dev, 0))
+                constraints.append(mask @ w <= bm_ind_w + effective_dev)
+                constraints.append(mask @ w >= max(bm_ind_w - effective_dev, 0))
 
     # 跟踪误差约束（若有协方差矩阵）
     if cov_matrix is not None:

@@ -177,34 +177,39 @@ class Backtester:
         self.strategy.on_start(context)
         logger.info(f"回测启动: {self.strategy.name} | {dates[0]:%Y-%m} ~ {dates[-1]:%Y-%m}")
 
-        for i, date in enumerate(dates):
-            if date not in self.benchmark_returns.index:
+        # 关键修正: 月末T计算权重 → 应用T+1月收益率（避免同期数据偏差）
+        for i in range(len(dates) - 1):
+            rebal_date = dates[i]       # 调仓决策日（月末T）
+            return_date = dates[i + 1]  # 收益实现日（月末T+1）
+
+            if return_date not in self.benchmark_returns.index:
                 continue
-            bm_ret = self.benchmark_returns.loc[date]
+            bm_ret = self.benchmark_returns.loc[return_date]
             if pd.isna(bm_ret):
                 continue
 
-            # 策略调仓
+            # 策略调仓：基于截至rebal_date的数据
             try:
                 new_w = self.strategy.rebalance(
-                    date=date,
-                    prices=self.close.loc[:date],
+                    date=rebal_date,
+                    prices=self.close.loc[:rebal_date],
                     universe=self.universe,
                     context=context,
                 )
             except Exception as e:
-                logger.warning(f"{date:%Y-%m}: rebalance失败 ({e})")
+                logger.warning(f"{rebal_date:%Y-%m}: rebalance失败 ({e})")
                 new_w = current_w
 
             if new_w is None or new_w.empty:
                 self._port_rets.append(0.0)
                 self._bm_rets.append(bm_ret)
-                self._dates.append(date)
+                self._dates.append(return_date)
                 continue
 
             turnover, cost = self._transaction_cost(new_w, current_w)
 
-            month_ret = self.monthly_returns.loc[date]
+            # 关键: 用下个月的收益率评估本次调仓
+            month_ret = self.monthly_returns.loc[return_date]
             port_ret = (new_w * month_ret.reindex(new_w.index).fillna(0)).sum() - cost
 
             self._port_rets.append(port_ret)
@@ -212,13 +217,13 @@ class Backtester:
             self._turnovers.append(turnover)
             self._costs.append(cost)
             self._weights.append(new_w)
-            self._dates.append(date)
+            self._dates.append(return_date)
             current_w = new_w
 
             if (i + 1) % 12 == 0:
                 cum = (1 + pd.Series(self._port_rets)).cumprod().iloc[-1] - 1
                 cum_bm = (1 + pd.Series(self._bm_rets)).cumprod().iloc[-1] - 1
-                logger.info(f"{date:%Y-%m}: 策略{cum:+.2%} | 基准{cum_bm:+.2%} | 超额{cum - cum_bm:+.2%}")
+                logger.info(f"{rebal_date:%Y-%m}: 策略{cum:+.2%} | 基准{cum_bm:+.2%} | 超额{cum - cum_bm:+.2%}")
 
         self.strategy.on_end(context)
 
